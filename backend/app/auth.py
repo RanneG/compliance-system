@@ -5,16 +5,17 @@ import secrets
 from fastapi import HTTPException, Request
 
 SESSIONS: dict[str, str] = {}
-ADMIN_USER = "admin"
+ADMIN_USER = "john ferrer"
 ADMIN_PASSWORD = "admin"
+ADMIN_NAME = "John Ferrer"
 
 
 def login(username: str, password: str) -> dict[str, str]:
     if username.strip().lower() != ADMIN_USER or password != ADMIN_PASSWORD:
         raise HTTPException(401, "Invalid username or password.")
     token = secrets.token_urlsafe(24)
-    SESSIONS[token] = "Admin"
-    return {"token": token, "name": "Admin"}
+    SESSIONS[token] = ADMIN_NAME
+    return {"token": token, "name": ADMIN_NAME}
 
 
 def logout(token: str) -> None:

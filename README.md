@@ -2,7 +2,7 @@
 
 Permit to Work for Endoscopy Decontamination (QA-ADM01 / EDUWI09): User checks, CP(D) declaration, hand-back, User review, AP(D) close.
 
-**Demo login:** `admin` / `admin`
+**Demo login:** `john ferrer` / `admin`
 
 Engineers do not log in. They use the QR / link on each permit (`/p/{token}`).
 
@@ -16,7 +16,7 @@ After the first successful GitHub Actions run, they can start the full app with:
 docker run --rm -p 8787:8787 ghcr.io/ranneg/compliance-system:latest
 ```
 
-Then open http://127.0.0.1:8787 and sign in as `admin` / `admin`.
+Then open http://127.0.0.1:8787 and sign in as `john ferrer` / `admin`.
 
 Or open in [GitHub Codespaces](https://codespaces.new/RanneG/compliance-system).
 

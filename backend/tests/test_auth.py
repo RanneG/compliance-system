@@ -19,11 +19,12 @@ def test_login_admin_and_protect_dashboard():
     denied = client.get("/api/dashboard")
     assert denied.status_code == 401
 
-    bad = client.post("/api/auth/login", json={"username": "admin", "password": "nope"})
+    bad = client.post("/api/auth/login", json={"username": "john ferrer", "password": "nope"})
     assert bad.status_code == 401
 
-    ok = client.post("/api/auth/login", json={"username": "admin", "password": "admin"})
+    ok = client.post("/api/auth/login", json={"username": "john ferrer", "password": "admin"})
     assert ok.status_code == 200
+    assert ok.json()["name"] == "John Ferrer"
     token = ok.json()["token"]
     allowed = client.get("/api/dashboard", headers={"Authorization": f"Bearer {token}"})
     assert allowed.status_code == 200

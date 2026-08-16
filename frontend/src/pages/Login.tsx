@@ -7,7 +7,7 @@ export default function Login() {
   const navigate = useNavigate()
   const location = useLocation()
   const from = (location.state as { from?: string } | null)?.from || '/'
-  const [username, setUsername] = useState('admin')
+  const [username, setUsername] = useState('john ferrer')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)

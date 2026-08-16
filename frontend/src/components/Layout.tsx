@@ -6,7 +6,7 @@ import { initials } from '../lib/format'
 
 export default function Layout() {
   const navigate = useNavigate()
-  const name = getSession()?.name || 'Admin'
+  const name = getSession()?.name || 'John Ferrer'
   const [query, setQuery] = useState('')
   const [briefing, setBriefing] = useState(false)
 

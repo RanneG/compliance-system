@@ -69,7 +69,7 @@ export function managerName() {
   } catch {
     /* ignore */
   }
-  return localStorage.getItem('ics.manager') || 'Admin'
+  return localStorage.getItem('ics.manager') || 'John Ferrer'
 }
 
 export function setManagerName(name: string) {
