@@ -1,0 +1,13 @@
+.git
+.github
+.venv
+.pytest_cache
+__pycache__
+*.pyc
+frontend/node_modules
+frontend/dist
+data/*.sqlite3
+data/uploads
+*.md
+PTW.bat
+Start-PTW.ps1

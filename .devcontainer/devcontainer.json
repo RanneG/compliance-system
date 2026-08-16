@@ -1,0 +1,14 @@
+{
+  "name": "compliance-system",
+  "image": "mcr.microsoft.com/devcontainers/python:3.12",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": { "version": "22" }
+  },
+  "forwardPorts": [5173, 8787],
+  "postCreateCommand": "python -m pip install -r backend/requirements.txt && npm install --prefix frontend",
+  "customizations": {
+    "vscode": {
+      "extensions": ["ms-python.python"]
+    }
+  }
+}
