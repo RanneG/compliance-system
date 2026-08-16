@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: ics-compliance
+    runtime: docker
+    plan: free
+    healthCheckPath: /api/health
+    envVars:
+      - key: PTW_SEED
+        value: "1"
