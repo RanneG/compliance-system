@@ -1,4 +1,4 @@
-import type { DashboardPayload, Permit } from './types'
+import type { AnalyticsPayload, DashboardPayload, Permit } from './types'
 import { accessQuery, authHeaders, getSession } from './auth'
 
 const API = '/api'
@@ -40,6 +40,13 @@ export const api = {
       parse<{ status: string }>(res),
     ),
   dashboard: () => fetch(`${API}/dashboard`, { headers: authHeaders() }).then((res) => parse<DashboardPayload>(res)),
+  analytics: (params?: { months?: number; period_days?: number }) => {
+    const query = new URLSearchParams()
+    if (params?.months) query.set('months', String(params.months))
+    if (params?.period_days) query.set('period_days', String(params.period_days))
+    const suffix = query.toString() ? `?${query}` : ''
+    return fetch(`${API}/analytics${suffix}`, { headers: authHeaders() }).then((res) => parse<AnalyticsPayload>(res))
+  },
   permits: (params?: { status?: string; q?: string; vault?: boolean }) => {
     const query = new URLSearchParams()
     if (params?.status) query.set('status', params.status)

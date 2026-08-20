@@ -5,7 +5,7 @@ import os
 import sqlite3
 import threading
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
@@ -317,6 +317,231 @@ def dashboard_stats() -> dict[str, int]:
         return counts
     finally:
         conn.close()
+
+
+def _month_keys(months: int = 6) -> list[tuple[str, str]]:
+    now = datetime.now(timezone.utc)
+    year, month = now.year, now.month
+    keys: list[tuple[str, str]] = []
+    for _ in range(months):
+        key = f"{year:04d}-{month:02d}"
+        label = datetime(year, month, 1, tzinfo=timezone.utc).strftime("%b %Y")
+        keys.insert(0, (key, label))
+        month -= 1
+        if month == 0:
+            month = 12
+            year -= 1
+    return keys
+
+
+def _iso_days_ago(days: int) -> str:
+    return (datetime.now(timezone.utc) - timedelta(days=days)).replace(microsecond=0).isoformat()
+
+
+def _parse_iso(value: str | None) -> datetime | None:
+    if not value:
+        return None
+    return datetime.fromisoformat(value.replace("Z", "+00:00"))
+
+
+def _in_period(value: str | None, start: datetime, end: datetime) -> bool:
+    parsed = _parse_iso(value)
+    return parsed is not None and start <= parsed < end
+
+
+def analytics_report(*, months: int = 6, period_days: int = 30) -> dict[str, Any]:
+    init_db()
+    conn = _connect()
+    try:
+        rows = [dict(r) for r in conn.execute("SELECT * FROM permits").fetchall()]
+        counts = dashboard_stats()
+        now = datetime.now(timezone.utc)
+        period_start = now - timedelta(days=period_days)
+        prev_start = now - timedelta(days=period_days * 2)
+
+        def period_counts(start: datetime, end: datetime) -> dict[str, int]:
+            created = activated = completed = 0
+            for row in rows:
+                if _in_period(row["created_at"], start, end):
+                    created += 1
+                if _in_period(row["activated_at"], start, end):
+                    activated += 1
+                if _in_period(row["audited_at"], start, end):
+                    completed += 1
+            return {"created": created, "activated": activated, "completed": completed}
+
+        current_period = period_counts(period_start, now)
+        previous_period = period_counts(prev_start, period_start)
+
+        month_index = {key: idx for idx, (key, _) in enumerate(_month_keys(months))}
+        monthly_flow = [
+            {"month": key, "label": label, "opened": 0, "activated": 0, "closed": 0}
+            for key, label in _month_keys(months)
+        ]
+        monthly_status = [
+            {
+                "month": key,
+                "label": label,
+                **{status: 0 for status in STATUSES},
+            }
+            for key, label in _month_keys(months)
+        ]
+
+        for row in rows:
+            created = _parse_iso(row["created_at"])
+            if created:
+                key = created.strftime("%Y-%m")
+                if key in month_index:
+                    idx = month_index[key]
+                    monthly_flow[idx]["opened"] += 1
+                    status = row["status"]
+                    if status in STATUSES:
+                        monthly_status[idx][status] += 1
+            activated = _parse_iso(row["activated_at"])
+            if activated:
+                key = activated.strftime("%Y-%m")
+                if key in month_index:
+                    monthly_flow[month_index[key]]["activated"] += 1
+            audited = _parse_iso(row["audited_at"])
+            if audited:
+                key = audited.strftime("%Y-%m")
+                if key in month_index:
+                    monthly_flow[month_index[key]]["closed"] += 1
+
+        cumulative_closed = 0
+        for bucket in monthly_flow:
+            cumulative_closed += bucket["closed"]
+            bucket["cumulative_closed"] = cumulative_closed
+
+        by_location: list[dict[str, Any]] = []
+        for location in LOCATIONS:
+            entry: dict[str, Any] = {"location": location, "total": 0}
+            for status in STATUSES:
+                entry[status] = 0
+            for row in rows:
+                if row["location"] == location and row["status"] in STATUSES:
+                    entry[row["status"]] += 1
+                    entry["total"] += 1
+            by_location.append(entry)
+
+        by_nature: list[dict[str, Any]] = []
+        for nature in NATURES:
+            total = open_count = completed = recent = 0
+            for row in rows:
+                if row["nature_of_work"] != nature:
+                    continue
+                total += 1
+                if row["status"] != "completed":
+                    open_count += 1
+                else:
+                    completed += 1
+                if _in_period(row["created_at"], period_start, now):
+                    recent += 1
+            by_nature.append(
+                {
+                    "nature": nature,
+                    "total": total,
+                    "open": open_count,
+                    "completed": completed,
+                    "recent": recent,
+                }
+            )
+
+        fit = not_fit = pending_fit = 0
+        close_days: list[float] = []
+        for row in rows:
+            if row["fit_for_purpose"] is None:
+                pending_fit += 1
+            elif row["fit_for_purpose"]:
+                fit += 1
+            else:
+                not_fit += 1
+            created = _parse_iso(row["created_at"])
+            audited = _parse_iso(row["audited_at"])
+            if created and audited:
+                close_days.append((audited - created).total_seconds() / 86400)
+
+        all_completed = counts["completed"]
+        all_total = counts["total"]
+        completion_rate = round((all_completed / all_total) * 100, 1) if all_total else 0.0
+        avg_days = round(sum(close_days) / len(close_days), 1) if close_days else None
+
+        created_dates = [_parse_iso(row["created_at"]) for row in rows]
+        created_dates = [d for d in created_dates if d is not None]
+
+        return {
+            "generated_at": utcnow(),
+            "period_days": period_days,
+            "months": months,
+            "current": {
+                "counts": counts,
+                "open_pipeline": all_total - all_completed,
+            },
+            "comparison": {
+                "current": current_period,
+                "previous": previous_period,
+                "delta": {
+                    key: current_period[key] - previous_period[key]
+                    for key in ("created", "activated", "completed")
+                },
+            },
+            "monthly_flow": monthly_flow,
+            "monthly_status": monthly_status,
+            "by_location": by_location,
+            "by_nature": by_nature,
+            "quality": {
+                "fit": fit,
+                "not_fit": not_fit,
+                "pending_fit": pending_fit,
+                "completion_rate": completion_rate,
+                "avg_days_to_close": avg_days,
+            },
+            "history": {
+                "all_time_created": all_total,
+                "all_time_completed": all_completed,
+                "oldest_permit": min(created_dates).isoformat() if created_dates else None,
+                "newest_permit": max(created_dates).isoformat() if created_dates else None,
+            },
+        }
+    finally:
+        conn.close()
+
+
+def backdate_permit_timestamps(
+    permit_id: str,
+    *,
+    created_at: str | None = None,
+    activated_at: str | None = None,
+    submitted_at: str | None = None,
+    audited_at: str | None = None,
+    updated_at: str | None = None,
+) -> None:
+    """Demo helper: adjust permit timestamps for analytics seed data."""
+    init_db()
+    fields: dict[str, str] = {}
+    if created_at is not None:
+        fields["created_at"] = created_at
+    if activated_at is not None:
+        fields["activated_at"] = activated_at
+    if submitted_at is not None:
+        fields["submitted_at"] = submitted_at
+    if audited_at is not None:
+        fields["audited_at"] = audited_at
+    if updated_at is not None:
+        fields["updated_at"] = updated_at
+    if not fields:
+        return
+    with _lock:
+        conn = _connect()
+        try:
+            assignments = ", ".join(f"{name} = ?" for name in fields)
+            conn.execute(
+                f"UPDATE permits SET {assignments} WHERE id = ?",
+                (*fields.values(), permit_id),
+            )
+            conn.commit()
+        finally:
+            conn.close()
 
 
 def get_permit(permit_id: str, include_trail: bool = True) -> dict[str, Any] | None:

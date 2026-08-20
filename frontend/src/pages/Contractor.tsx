@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { api } from '../api'
+import LegalLinks from '../components/LegalLinks'
 import ProgressStrip from '../components/ProgressStrip'
 import SignaturePad from '../components/SignaturePad'
 import StatusBadge from '../components/StatusBadge'
@@ -88,6 +89,7 @@ export default function Contractor() {
         <div className="paper field-card">
           <h1>Access not valid</h1>
           <p>{error}</p>
+          <LegalLinks />
         </div>
       </div>
     )
@@ -194,6 +196,9 @@ export default function Contractor() {
           </section>
         )}
       </main>
+      <footer className="legal-bar field-legal">
+        <LegalLinks />
+      </footer>
       <nav className="field-nav">
         <button type="button" className={tab === 'permit' ? 'on' : ''} onClick={() => setTab('permit')}>
           Permit

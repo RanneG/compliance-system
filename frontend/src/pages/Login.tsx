@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { api } from '../api'
 import { getSession, setSession } from '../auth'
+import LegalLinks from '../components/LegalLinks'
 
 export default function Login() {
   const navigate = useNavigate()
@@ -62,6 +63,7 @@ export default function Login() {
         <button type="submit" className="btn" disabled={busy}>
           Sign in
         </button>
+        <LegalLinks className="legal-links-center" />
       </form>
     </div>
   )

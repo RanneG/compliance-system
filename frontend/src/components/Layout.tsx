@@ -2,6 +2,7 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useState, type FormEvent } from 'react'
 import { api } from '../api'
 import { clearSession, getSession } from '../auth'
+import LegalLinks from './LegalLinks'
 import { initials } from '../lib/format'
 
 export default function Layout() {
@@ -64,6 +65,7 @@ export default function Layout() {
           >
             Log out
           </button>
+          <LegalLinks className="legal-links-stack" />
         </div>
       </aside>
       <div className="main">
@@ -100,6 +102,9 @@ export default function Layout() {
         <div className="content">
           <Outlet />
         </div>
+        <footer className="legal-bar">
+          <LegalLinks />
+        </footer>
       </div>
       {briefing && (
         <div className="modal-backdrop" onClick={() => setBriefing(false)}>

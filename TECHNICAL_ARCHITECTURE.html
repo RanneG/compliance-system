@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Technical Architecture & System Design Specification — PTW Platform</title>
+  <style>
+    :root {
+      --primary: #0284c7;
+      --primary-soft: #f0f9ff;
+      --primary-dark: #0369a1;
+      --ink: #0f172a;
+      --muted: #475569;
+      --line: #e2e8f0;
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --code-bg: #0f172a;
+      --code-text: #f8fafc;
+      --accent: #8b5cf6;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      line-height: 1.65;
+      margin: 0;
+      padding: 2rem 1rem;
+    }
+
+    .action-bar {
+      max-width: 960px;
+      margin: 0 auto 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      padding: 0.85rem 1.4rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    }
+
+    .btn-print {
+      background: var(--primary);
+      color: white;
+      border: 0;
+      padding: 0.65rem 1.3rem;
+      font-size: 0.9rem;
+      font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+      transition: background 0.15s ease;
+    }
+
+    .btn-print:hover {
+      background: var(--primary-dark);
+    }
+
+    .page-container {
+      max-width: 960px;
+      margin: 0 auto;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+      padding: 3.5rem 4.5rem;
+    }
+
+    .meta-banner {
+      background: #f1f5f9;
+      border-radius: 8px;
+      padding: 0.85rem 1.2rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+      display: flex;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .meta-banner strong {
+      color: var(--ink);
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin: 0 0 0.3rem;
+      color: var(--ink);
+    }
+
+    .subtitle {
+      font-size: 1.15rem;
+      color: var(--primary);
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      border-bottom: 2px solid var(--primary-soft);
+      padding-bottom: 0.8rem;
+    }
+
+    h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin: 2.4rem 0 0.9rem;
+      color: var(--ink);
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 0.45rem;
+    }
+
+    h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin: 1.6rem 0 0.6rem;
+      color: var(--ink);
+    }
+
+    p,
+    ul,
+    ol {
+      margin-bottom: 1rem;
+      color: #334155;
+      font-size: 0.95rem;
+    }
+
+    li {
+      margin-bottom: 0.45rem;
+    }
+
+    .tech-box {
+      background: var(--primary-soft);
+      border-left: 5px solid var(--primary);
+      border-radius: 8px;
+      padding: 1.25rem 1.5rem;
+      margin: 1.5rem 0 2rem;
+    }
+
+    .tech-box p {
+      margin: 0;
+      color: #0369a1;
+      font-weight: 500;
+      font-size: 0.98rem;
+    }
+
+    pre {
+      background: var(--code-bg);
+      color: var(--code-text);
+      padding: 1.2rem 1.4rem;
+      border-radius: 8px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.84rem;
+      line-height: 1.5;
+      overflow-x: auto;
+      margin: 1.2rem 0;
+    }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.88em;
+      background: #f1f5f9;
+      color: #0f172a;
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+    }
+
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+    }
+
+    /* Schema Table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.2rem 0 1.8rem;
+      font-size: 0.9rem;
+    }
+
+    th,
+    td {
+      text-align: left;
+      padding: 0.85rem 1.1rem;
+      border: 1px solid var(--line);
+    }
+
+    th {
+      background: #f8fafc;
+      font-weight: 700;
+      color: var(--ink);
+      text-transform: uppercase;
+      font-size: 0.78rem;
+      letter-spacing: 0.04em;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .badge-blue {
+      background: var(--primary-soft);
+      color: var(--primary);
+    }
+
+    .badge-purple {
+      background: #f3e8ff;
+      color: var(--accent);
+    }
+
+    /* Print Stylesheet */
+    @page {
+      size: auto;
+      margin: 15mm 15mm 15mm 15mm;
+    }
+    @media print {
+      @page {
+        margin: 12mm 15mm 12mm 15mm;
+      }
+      body {
+        background: white;
+        padding: 0;
+      }
+
+      .action-bar {
+        display: none !important;
+      }
+
+      .page-container {
+        border: 0;
+        box-shadow: none;
+        padding: 0;
+        max-width: 100%;
+      }
+
+      h1 {
+        font-size: 1.9rem;
+      }
+
+      h2 {
+        page-break-after: avoid;
+      }
+
+      table,
+      pre,
+      .tech-box {
+        page-break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="action-bar" id="actionBar">
+    <span style="font-size: 0.85rem; color: var(--muted);">
+      <strong style="color: var(--ink);">Clean PDF Export:</strong> In the print preview window, expand <em>More settings</em> and uncheck <strong>"Headers and footers"</strong> to remove timestamps & file URL.
+    </span>
+    <button class="btn-print" onclick="window.print()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="6 9 6 2 18 2 18 9"></polyline>
+        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+        <rect x="6" y="14" width="12" height="8"></rect>
+      </svg>
+      Save as PDF / Print
+    </button>
+  </div>
+
+  <div class="page-container">
+    <h1>System Architecture & Technical Design Specification</h1>
+    <div class="subtitle">Industrial Compliance System — Permit to Work (PTW) Platform</div>
+
+    <div class="meta-banner">
+      <span>Author: <strong>Ranne Gerodias</strong></span>
+      <span>Version: <strong>1.0.1</strong></span>
+      <span>Target Audience: <strong>Engineering, DevOps, Security Auditors</strong></span>
+    </div>
+
+    <div class="tech-box">
+      <p><strong>Architectural Overview:</strong> The Industrial Compliance System is an enterprise-grade web platform
+        designed to digitize the Permit to Work (PTW) lifecycle for healthcare decontamination equipment. Built on a
+        decoupled React 19 SPA frontend and FastAPI ASGI Python backend, the system enforces zero-trust field access,
+        deterministic state transitions, and immutable audit event persistence.</p>
+    </div>
+
+    <h2>1. Core Engineering Principles</h2>
+    <ol>
+      <li><strong>Zero-Trust Field Access Control:</strong> Field contractors operate in a zero-friction, passwordless
+        environment backed by cryptographically unguessable, tokenized dynamic URLs (<code>/p/{access_token}</code>).
+      </li>
+      <li><strong>Immutable Append-Only Audit Security:</strong> All state transitions, field declarations, hand-back
+        signatures, and evidence uploads emit immutable event payloads (<code>audit_events</code>) with UTC timestamps
+        and client user-agent metadata.</li>
+      <li><strong>Decoupled Architecture:</strong> Type-safe React 19 SPA frontend integrated with a lightweight,
+        high-concurrency FastAPI ASGI Python backend.</li>
+      <li><strong>Deterministic Compliance Lifecycle:</strong> Strict state machine enforcing workflow invariants (e.g.
+        Part 2 safety declaration required prior to Part 3 hand-back; Part 4 user acceptance required prior to Part 5
+        vault locking).</li>
+      <li><strong>Zero-Dependency SVG Component Architecture:</strong> Production-grade custom SVG charting engine
+        (<code>ClusterBarTrendChart</code>) built directly on native SVG primitives with dual-axis rendering and cubic
+        bezier spline interpolation.</li>
+    </ol>
+
+    <h2>2. Database DDL Schema (SQLite WAL & PostgreSQL Compatible)</h2>
+    <pre><code>-- Main Permits Table
+CREATE TABLE IF NOT EXISTS permits (
+    id TEXT PRIMARY KEY,
+    equipment_sn TEXT NOT NULL,
+    equipment_name TEXT NOT NULL DEFAULT '',
+    location TEXT NOT NULL,
+    nature_of_work TEXT NOT NULL,
+    description TEXT NOT NULL DEFAULT '',
+    decontaminated INTEGER NOT NULL DEFAULT 0,
+    status TEXT NOT NULL,
+    access_token TEXT UNIQUE,
+    contractor_name TEXT,
+    work_details TEXT,
+    fit_for_purpose INTEGER,
+    not_fit_reason TEXT,
+    user_fit INTEGER,
+    user_not_fit_details TEXT,
+    created_by TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    activated_at TEXT,
+    submitted_at TEXT,
+    audited_at TEXT
+);
+
+-- Signatures Table (Base64 PNG Storage)
+CREATE TABLE IF NOT EXISTS signatures (
+    id TEXT PRIMARY KEY,
+    permit_id TEXT NOT NULL,
+    part TEXT NOT NULL,
+    signer_name TEXT NOT NULL,
+    signer_role TEXT NOT NULL,
+    image_png TEXT NOT NULL,
+    signed_at TEXT NOT NULL,
+    user_agent TEXT,
+    FOREIGN KEY (permit_id) REFERENCES permits(id)
+);
+
+-- File Evidence Storage Table
+CREATE TABLE IF NOT EXISTS evidence (
+    id TEXT PRIMARY KEY,
+    permit_id TEXT NOT NULL,
+    original_name TEXT NOT NULL,
+    stored_name TEXT NOT NULL,
+    content_type TEXT NOT NULL,
+    size_bytes INTEGER NOT NULL,
+    uploaded_at TEXT NOT NULL,
+    FOREIGN KEY (permit_id) REFERENCES permits(id)
+);
+
+-- Immutable Event Audit Trail Table
+CREATE TABLE IF NOT EXISTS audit_events (
+    id TEXT PRIMARY KEY,
+    permit_id TEXT NOT NULL,
+    event_type TEXT NOT NULL,
+    actor TEXT NOT NULL,
+    payload_json TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    FOREIGN KEY (permit_id) REFERENCES permits(id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_permits_status ON permits(status);
+CREATE INDEX IF NOT EXISTS idx_permits_sn ON permits(equipment_sn);
+CREATE INDEX IF NOT EXISTS idx_audit_permit ON audit_events(permit_id, created_at);</code></pre>
+
+    <h2>3. State Machine Transition Mechanics</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>State Transition</th>
+          <th>Trigger Endpoint</th>
+          <th>Business Invariants & Security Rules</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>draft &rarr; active</code></td>
+          <td><code>POST /api/permits/:id/activate</code></td>
+          <td>Generates 24-byte urlsafe access token (<code>secrets.token_urlsafe(24)</code>) and PNG QR code binary.
+          </td>
+        </tr>
+        <tr>
+          <td><code>active (Unsigned) &rarr; Declared</code></td>
+          <td><code>POST /api/access/:token/declaration</code></td>
+          <td>Validates contractor acknowledgement and PNG signature URI. Emits <code>declaration.signed</code> audit
+            event.</td>
+        </tr>
+        <tr>
+          <td><code>Declared &rarr; pending_user</code></td>
+          <td><code>POST /api/access/:token/handover</code></td>
+          <td>Requires existing Part 2 declaration. Mandatory reason if <code>fit_for_purpose = false</code>. Emits
+            <code>handover.submitted</code>.
+          </td>
+        </tr>
+        <tr>
+          <td><code>pending_user &rarr; pending_review</code></td>
+          <td><code>POST /api/permits/:id/user-review</code></td>
+          <td>Clinical user signs Part 4 acceptance. Records <code>user_fit</code> status and timestamp.</td>
+        </tr>
+        <tr>
+          <td><code>pending_review &rarr; completed</code></td>
+          <td><code>POST /api/permits/:id/audit</code></td>
+          <td>AP(D) manager executes final review. Locks record permanently in the audit vault archive.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>4. Custom SVG Chart Rendering Mathematics</h2>
+    <p>The <code>ClusterBarTrendChart</code> component computes responsive coordinate geometry without external D3 or
+      Recharts dependencies:</p>
+
+    <p><strong>1. Clustered Bar Group Positioning:</strong></p>
+    <pre><code>groupXStart = marginLeft + i * groupWidth
+barX = startOffsetX + seriesIdx * (singleBarWidth + gapWidth)
+barY = marginTop + plotHeight * (1 - value / maxY)</code></pre>
+
+    <p><strong>2. Cubic Bezier Spline Interpolation for Overlay Trendlines:</strong></p>
+    <pre><code>controlX1 = X0 + (X1 - X0) / 2,   controlY1 = Y0
+controlX2 = X0 + (X1 - X0) / 2,   controlY2 = Y1
+SVG Path: M X0 Y0 C controlX1 controlY1, controlX2 controlY2, X1 Y1</code></pre>
+
+    <h2>5. Production Deployment Architecture</h2>
+
+    <h3>A. Containerization (Dockerfile)</h3>
+    <pre><code>FROM node:20-alpine AS frontend-builder
+WORKDIR /app/frontend
+COPY frontend/package*.json ./
+RUN npm ci
+COPY frontend/ ./
+RUN npm run build
+
+FROM python:3.12-slim AS runner
+WORKDIR /app
+COPY backend/requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+COPY backend/ ./backend/
+COPY --from=frontend-builder /app/frontend/dist ./frontend/dist
+
+ENV PTW_DATA_DIR=/app/data
+EXPOSE 8787
+
+CMD ["uvicorn", "backend.app.main:app", "--host", "0.0.0.0", "--port", "8787", "--workers", "4"]</code></pre>
+
+    <h3>B. Production Nginx Reverse Proxy Config (TLS 1.3)</h3>
+    <pre><code>server {
+    listen 443 ssl http2;
+    server_name ptw.hospital.internal;
+
+    ssl_certificate /etc/ssl/certs/ptw.crt;
+    ssl_certificate_key /etc/ssl/certs/ptw.key;
+    ssl_protocols TLSv1.2 TLSv1.3;
+
+    client_max_body_size 12M;
+
+    location / {
+        proxy_pass http://127.0.0.1:8787;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}</code></pre>
+
+  </div>
+
+</body>
+
+</html>

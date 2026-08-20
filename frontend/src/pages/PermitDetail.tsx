@@ -17,6 +17,7 @@ export default function PermitDetail() {
   const [signature, setSignature] = useState('')
   const [acceptFit, setAcceptFit] = useState(true)
   const [notFit, setNotFit] = useState('')
+  const [showAllTrail, setShowAllTrail] = useState(false)
 
   async function load() {
     try {
@@ -168,9 +169,21 @@ export default function PermitDetail() {
         </section>
       )}
       <section className="trail">
-        <h3>Controlled record</h3>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.6rem' }}>
+          <h3 style={{ margin: 0 }}>Controlled record</h3>
+          {(permit.audit_trail || []).length > 5 && (
+            <button
+              type="button"
+              className="text-btn"
+              onClick={() => setShowAllTrail(!showAllTrail)}
+              style={{ fontSize: '0.8rem', cursor: 'pointer' }}
+            >
+              {showAllTrail ? 'Show 5 most recent' : `Show all ${(permit.audit_trail || []).length} records`}
+            </button>
+          )}
+        </div>
         <ol>
-          {(permit.audit_trail || []).map((event) => (
+          {(showAllTrail ? (permit.audit_trail || []) : (permit.audit_trail || []).slice(-5)).map((event) => (
             <li key={event.id}>
               <strong>{eventLabel(event.event_type)}</strong>
               <span>

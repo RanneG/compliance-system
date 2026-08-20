@@ -65,3 +65,78 @@ export type DashboardPayload = {
   counts: Record<string, number>
   permits: Permit[]
 }
+
+export type AnalyticsPeriodCounts = {
+  created: number
+  activated: number
+  completed: number
+}
+
+export type AnalyticsMonthlyFlow = {
+  month: string
+  label: string
+  opened: number
+  activated: number
+  closed: number
+  cumulative_closed: number
+}
+
+export type AnalyticsMonthlyStatus = {
+  month: string
+  label: string
+  draft: number
+  active: number
+  pending_user: number
+  pending_review: number
+  completed: number
+}
+
+export type AnalyticsLocationRow = {
+  location: string
+  total: number
+  draft: number
+  active: number
+  pending_user: number
+  pending_review: number
+  completed: number
+}
+
+export type AnalyticsNatureRow = {
+  nature: string
+  total: number
+  open: number
+  completed: number
+  recent: number
+}
+
+export type AnalyticsPayload = {
+  generated_at: string
+  period_days: number
+  months: number
+  current: {
+    counts: Record<string, number>
+    open_pipeline: number
+  }
+  comparison: {
+    current: AnalyticsPeriodCounts
+    previous: AnalyticsPeriodCounts
+    delta: AnalyticsPeriodCounts
+  }
+  monthly_flow: AnalyticsMonthlyFlow[]
+  monthly_status: AnalyticsMonthlyStatus[]
+  by_location: AnalyticsLocationRow[]
+  by_nature: AnalyticsNatureRow[]
+  quality: {
+    fit: number
+    not_fit: number
+    pending_fit: number
+    completion_rate: number
+    avg_days_to_close: number | null
+  }
+  history: {
+    all_time_created: number
+    all_time_completed: number
+    oldest_permit: string | null
+    newest_permit: string | null
+  }
+}

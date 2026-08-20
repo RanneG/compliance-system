@@ -4,6 +4,7 @@ import RequireAuth from './components/RequireAuth'
 import Analytics from './pages/Analytics'
 import Contractor from './pages/Contractor'
 import Dashboard from './pages/Dashboard'
+import Legal from './pages/Legal'
 import Login from './pages/Login'
 import NewPermit from './pages/NewPermit'
 import PermitDetail from './pages/PermitDetail'
@@ -14,6 +15,8 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/terms" element={<Legal kind="terms" />} />
+        <Route path="/privacy" element={<Legal kind="privacy" />} />
         <Route path="/p/:token" element={<Contractor />} />
         <Route element={<RequireAuth />}>
           <Route element={<Layout />}>

@@ -6,6 +6,8 @@ Permit to Work for Endoscopy Decontamination (QA-ADM01 / EDUWI09): User checks, 
 
 Engineers do not log in. They use the QR / link on each permit (`/p/{token}`).
 
+When the app is running, **Terms of Service** is `/terms` and **Privacy Policy** is `/privacy`. Keep both in sync via `frontend/src/legal/content.ts`.
+
 ## Share with a coworker
 
 Repo: https://github.com/RanneG/compliance-system

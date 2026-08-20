@@ -101,6 +101,15 @@ def dashboard(_user: str = Depends(auth.require_admin)) -> dict[str, Any]:
     return {"counts": store.dashboard_stats(), "permits": store.list_permits()}
 
 
+@app.get("/api/analytics")
+def analytics(
+    months: int = 6,
+    period_days: int = 30,
+    _user: str = Depends(auth.require_admin),
+) -> dict[str, Any]:
+    return store.analytics_report(months=months, period_days=period_days)
+
+
 @app.get("/api/permits")
 def list_permits(
     status: str | None = None,

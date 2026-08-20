@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Industrial Compliance System — Executive Briefing & Stakeholder Guide</title>
+  <style>
+    :root {
+      --primary: #1677ff;
+      --primary-soft: #e8f1ff;
+      --primary-dark: #0958d9;
+      --ink: #1d2939;
+      --muted: #667085;
+      --line: #eaecf0;
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --ok: #12b76a;
+      --ok-soft: #ecfdf3;
+      --warn: #dc6803;
+      --warn-soft: #fffaeb;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      line-height: 1.6;
+      margin: 0;
+      padding: 2rem 1rem;
+    }
+    .action-bar {
+      max-width: 900px;
+      margin: 0 auto 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      padding: 0.85rem 1.4rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+    }
+    .btn-print {
+      background: var(--primary);
+      color: white;
+      border: 0;
+      padding: 0.65rem 1.3rem;
+      font-size: 0.9rem;
+      font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 4px 12px rgba(22, 119, 255, 0.25);
+      transition: background 0.15s ease;
+    }
+    .btn-print:hover { background: var(--primary-dark); }
+    .page-container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(16, 24, 40, 0.06);
+      padding: 3.5rem 4rem;
+    }
+    h1 { font-size: 2.2rem; font-weight: 800; letter-spacing: -0.03em; margin: 0 0 0.3rem; color: var(--ink); }
+    .subtitle { font-size: 1.15rem; color: var(--primary); font-weight: 700; margin-bottom: 2rem; border-bottom: 2px solid var(--primary-soft); padding-bottom: 0.8rem; }
+    h2 { font-size: 1.4rem; font-weight: 700; margin: 2.2rem 0 0.9rem; color: var(--ink); border-bottom: 1px solid var(--line); padding-bottom: 0.45rem; }
+    h3 { font-size: 1.1rem; font-weight: 700; margin: 1.5rem 0 0.6rem; color: var(--ink); }
+    p, ul, ol { margin-bottom: 1rem; color: #344054; font-size: 0.95rem; }
+    li { margin-bottom: 0.45rem; }
+    
+    .exec-summary-box {
+      background: linear-gradient(135deg, #f0f7ff 0%, #e8f1ff 100%);
+      border-left: 5px solid var(--primary);
+      border-radius: 8px;
+      padding: 1.25rem 1.5rem;
+      margin: 1.5rem 0 2rem;
+    }
+    .exec-summary-box p { margin: 0; color: #1e3a8a; font-weight: 500; font-size: 1rem; line-height: 1.65; }
+
+    /* Comparison Table */
+    table { width: 100%; border-collapse: collapse; margin: 1.2rem 0 1.8rem; font-size: 0.9rem; }
+    th, td { text-align: left; padding: 0.85rem 1.1rem; border: 1px solid var(--line); }
+    th { background: #f8fafc; font-weight: 700; color: var(--ink); text-transform: uppercase; font-size: 0.78rem; letter-spacing: 0.04em; }
+    td strong { color: var(--ink); }
+
+    /* Step Journey Diagram */
+    .journey-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0.6rem;
+      margin: 1.5rem 0 2rem;
+    }
+    .journey-step {
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 0.85rem 0.75rem;
+      text-align: center;
+      position: relative;
+    }
+    .journey-step-num {
+      width: 24px;
+      height: 24px;
+      background: var(--primary-soft);
+      color: var(--primary);
+      font-weight: 800;
+      font-size: 0.75rem;
+      border-radius: 50%;
+      display: inline-grid;
+      place-items: center;
+      margin-bottom: 0.4rem;
+    }
+    .journey-step-title { font-size: 0.82rem; font-weight: 700; color: var(--ink); display: block; margin-bottom: 0.2rem; }
+    .journey-step-sub { font-size: 0.72rem; color: var(--muted); display: block; }
+
+    /* Key Metrics Grid */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin: 1.2rem 0;
+    }
+    .metric-card {
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+    }
+    .metric-card-title { font-size: 0.82rem; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.3rem; }
+    .metric-card-desc { font-size: 0.88rem; color: var(--muted); margin: 0; }
+
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+    .badge-green { background: var(--ok-soft); color: var(--ok); }
+    .badge-blue { background: var(--primary-soft); color: var(--primary); }
+
+    /* Print Stylesheet */
+    @page {
+      size: auto;
+      margin: 15mm 15mm 15mm 15mm;
+    }
+    @media print {
+      @page {
+        margin: 12mm 15mm 12mm 15mm;
+      }
+      body { background: white; padding: 0; }
+      .action-bar { display: none !important; }
+      .page-container { border: 0; box-shadow: none; padding: 0; max-width: 100%; }
+      h1 { font-size: 1.9rem; }
+      h2 { page-break-after: avoid; }
+      table, .exec-summary-box, .journey-grid, .metric-card { page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="action-bar" id="actionBar">
+    <span style="font-size: 0.85rem; color: var(--muted);">
+      <strong style="color: var(--ink);">Clean PDF Export:</strong> In the print preview window, expand <em>More settings</em> and uncheck <strong>"Headers and footers"</strong> to remove timestamps & file URL.
+    </span>
+    <button class="btn-print" onclick="window.print()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+      Save as PDF / Print
+    </button>
+  </div>
+
+  <div class="page-container">
+    <h1>Industrial Compliance System (PTW)</h1>
+    <div class="subtitle">Executive Briefing & Stakeholder Presentation Guide</div>
+
+    <div class="exec-summary-box">
+      <p><strong>Executive Summary:</strong> The Industrial Compliance System is a modern digital platform designed to manage the Permit to Work (PTW) lifecycle for critical healthcare and industrial equipment — including washer-disinfectors, endoscope reprocessors, autoclaves, and vacuum systems. It replaces slow paper permits with an instant mobile-first, QR-enabled workflow that ensures 100% safety compliance, photo evidence collection, and permanent audit readiness.</p>
+    </div>
+
+    <h2>1. Strategic Comparison: Paper vs Digital Platform</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Challenge with Paper Permits</th>
+          <th>Digital Platform Solution</th>
+          <th>Key Executive Benefit</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Lost or incomplete forms</strong></td>
+          <td>100% digital workflow with mandatory completion checks</td>
+          <td><span class="badge badge-green">Zero Compliance Gaps</span></td>
+        </tr>
+        <tr>
+          <td><strong>Slow contractor onboarding</strong></td>
+          <td>Instant QR code scanning on mobile devices with zero login required</td>
+          <td><span class="badge badge-blue">Zero Onboarding Friction</span></td>
+        </tr>
+        <tr>
+          <td><strong>No real-time visibility</strong></td>
+          <td>Live operational dashboard with trendlines and status meters</td>
+          <td><span class="badge badge-blue">Instant Oversight</span></td>
+        </tr>
+        <tr>
+          <td><strong>Illegible signatures</strong></td>
+          <td>Touchscreen digital signatures with automatic UTC date/time stamps</td>
+          <td><span class="badge badge-green">Tamper-Proof Proof</span></td>
+        </tr>
+        <tr>
+          <td><strong>Disjointed photo proof</strong></td>
+          <td>Direct camera photo & PDF evidence attachment from phones</td>
+          <td><span class="badge badge-green">Defensible Documentation</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>2. Operational Intelligence: Executive Dashboard Oversight</h2>
+    <p>Management teams get an intuitive, real-time analytics hub. Instead of flipping through paper binders, leadership gains instant clarity on operational health:</p>
+    
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-card-title">Live Pipeline Tracker</div>
+        <p class="metric-card-desc">Displays exact numbers of permits currently active, under user review, or awaiting final manager audit.</p>
+      </div>
+      <div class="metric-card">
+        <div class="metric-card-title">Workload & Completion Velocity</div>
+        <p class="metric-card-desc">Tracks new permits opened and completed across 30, 60, or 90-day time horizons with period comparison trends.</p>
+      </div>
+      <div class="metric-card">
+        <div class="metric-card-title">Facility Site Comparison</div>
+        <p class="metric-card-desc">Side-by-side workload comparisons between facility sites (e.g., <em>Darth Valley Hospital</em> vs. <em>Queen Mary's Hospital</em>).</p>
+      </div>
+      <div class="metric-card">
+        <div class="metric-card-title">Equipment Quality & Fitness Score</div>
+        <p class="metric-card-desc">Highlights how many pieces of equipment were returned <strong>Fit for Clinical Use</strong> versus those requiring defect resolution.</p>
+      </div>
+    </div>
+
+    <h2>3. The 5-Step Digital Permit Journey</h2>
+    <p>The platform guides every permit through a seamless, 5-stage lifecycle designed for speed, clarity, and safety:</p>
+
+    <div class="journey-grid">
+      <div class="journey-step">
+        <div class="journey-step-num">1</div>
+        <span class="journey-step-title">Initiation</span>
+        <span class="journey-step-sub">Manager drafts permit details</span>
+      </div>
+      <div class="journey-step">
+        <div class="journey-step-num">2</div>
+        <span class="journey-step-title">QR Safety Check</span>
+        <span class="journey-step-sub">Engineer scans & signs safety rules</span>
+      </div>
+      <div class="journey-step">
+        <div class="journey-step-num">3</div>
+        <span class="journey-step-title">Maintenance</span>
+        <span class="journey-step-sub">Uploads photos & submits hand-back</span>
+      </div>
+      <div class="journey-step">
+        <div class="journey-step-num">4</div>
+        <span class="journey-step-title">Verification</span>
+        <span class="journey-step-sub">Dept head inspects & accepts fit</span>
+      </div>
+      <div class="journey-step">
+        <div class="journey-step-num">5</div>
+        <span class="journey-step-title">Vault Archive</span>
+        <span class="journey-step-sub">Manager audits & locks record</span>
+      </div>
+    </div>
+
+    <ol>
+      <li><strong>Step 1: Permit Initiation (Manager):</strong> The manager drafts a digital permit selecting equipment serial number, hospital department, nature of work (<em>Repair</em>, <em>Maintenance</em>, <em>Service</em>), and decontamination confirmation.</li>
+      <li><strong>Step 2: Instant QR Share & Safety Check (External Engineer):</strong> The system generates a dynamic QR code. The field engineer scans the QR code with their mobile phone camera. <strong>No account creation or password is required.</strong> The engineer reviews safety rules and signs the declaration on screen.</li>
+      <li><strong>Step 3: Maintenance Execution & Photo Evidence (External Engineer):</strong> The engineer completes work, indicates whether equipment is <em>Fit for Clinical Use</em>, and attaches job photos or PDF certificates directly from their phone camera.</li>
+      <li><strong>Step 4: Clinical Verification & Hand-Back (Department Head):</strong> The clinical department head inspects the equipment, reviews the work summary and photo proof, and signs their digital acceptance.</li>
+      <li><strong>Step 5: Manager Audit & Permanent Vaulting (Manager):</strong> The manager performs final audit review. The permit is permanently locked in the searchable compliance vault.</li>
+    </ol>
+
+    <h2>4. Strategic Business Value & Return on Investment (ROI)</h2>
+    <ul>
+      <li><strong>Zero Training Barriers for External Contractors:</strong> External service engineers do not need usernames or passwords. Scanning the QR code lets them complete safety declarations and hand-backs in under 2 minutes.</li>
+      <li><strong>100% Audit Readiness:</strong> During regulatory inspections, managers can search any equipment serial number and instantly retrieve full photo evidence, digital signatures, and historical timelines.</li>
+      <li><strong>Reduced Equipment Downtime:</strong> Faster digital handovers mean critical medical washers, autoclaves, and reprocessors are returned to patient care sooner.</li>
+      <li><strong>Regulatory Standards Built-In:</strong> Structured to satisfy healthcare engineering decontamination compliance standards (QA-ADM01 / EDUWI09).</li>
+    </ul>
+
+    <h2>5. Production Readiness & Security Highlights</h2>
+    <ul>
+      <li><strong>Works on Any Device:</strong> Accessible from desktop PCs, iPads, tablets, and smartphones (iOS & Android).</li>
+      <li><strong>Bank-Grade Data Protection:</strong> Encrypted connections (HTTPS/TLS) with immutable UTC time-stamped signature logs.</li>
+      <li><strong>Enterprise Cloud Ready:</strong> Deploys seamlessly into secure cloud environments (AWS, Azure, Docker containers) or on-premises hospital servers.</li>
+      <li><strong>Single Sign-On (SSO) Integration:</strong> Managers log in securely using their existing organization credentials.</li>
+    </ul>
+
+  </div>
+
+</body>
+</html>
